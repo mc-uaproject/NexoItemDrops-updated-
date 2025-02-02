@@ -31,7 +31,7 @@ public class BlockBreakListener implements Listener {
             Player player = event.getPlayer();
 
             if (event.getBlock().getType().getKey().toString().equals(data.source()) &&
-                    baseChance + (DropCalculator.calculateFortuneDropChance(baseChance, getFortuneLevel(player), getFortuneValue())) < data.chance()
+                    (DropCalculator.calculateFortuneDropChance(baseChance, getFortuneLevel(player), getFortuneValue())) < data.chance()
             ) {
                 if (!data.dropWithSilkTouch()
                         && event.getPlayer().getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.SILK_TOUCH) != 0
