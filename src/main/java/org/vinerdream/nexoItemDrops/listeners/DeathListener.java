@@ -42,7 +42,7 @@ public class DeathListener implements Listener {
 
             if (event.getEntity().getKiller() != null) continue;
             Player killerPlayer = event.getEntity().getKiller();
-            if (entityMatches && RandomChance + (DropCalculator.calculateLootingDropChance(RandomChance, getLootingLevel(killerPlayer), getLootingValue())) < data.chance()) {
+            if (entityMatches && DropCalculator.calculateLootingDropChance(RandomChance, getLootingLevel(killerPlayer), getLootingValue()) < data.chance()) {
 
                 ItemBuilder builder = NexoItems.itemFromId(data.nexoId());
                 if (builder == null) continue;
