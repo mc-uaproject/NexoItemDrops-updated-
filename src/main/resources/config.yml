@@ -1,0 +1,4 @@
+drops:
+  globalSettings:
+    lootingMode: COMMON
+    fortuneMode: NORMAL

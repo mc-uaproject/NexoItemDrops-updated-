@@ -1,0 +1,5 @@
+name: NexoItemDrops
+version: '1.0-SNAPSHOT'
+main: org.vinerdream.nexoItemDrops.NexoItemDrops
+api-version: '1.21'
+depend: [MythicMobs]
