@@ -23,19 +23,24 @@ public class BlockBreakListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+        Player player = event.getPlayer();
+        if (player.getGameMode() == GameMode.CREATIVE) return;
+
         for (DropData data : plugin.getDropList()) {
             if (data.sourceType() != SourceType.BLOCK) continue;
 
             double baseChance = plugin.getRandom().nextDouble();
-            Player player = event.getPlayer();
 
-            if (event.getBlock().getType().getKey().toString().equals(data.source()) &&
-                    (DropCalculator.calculateFortuneDropChance(baseChance, getFortuneLevel(player), getFortuneValue())) < data.chance()
-            ) {
+            String dropName = data.nexoId();
+            if (data.nexoId() == null) return;
+
+            if (event.getBlock().getType().getKey().toString().equals(data.source()) && DropData.isDropPresent(dropName) &&
+                    (DropCalculator.calculateFortuneDropChance(baseChance, getFortuneLevel(player), getFortuneValue(dropName))) < data.chance()) {
+
                 if (!data.dropWithSilkTouch()
-                        && event.getPlayer().getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.SILK_TOUCH) != 0
-                ) continue;
+                        && event.getPlayer().getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.SILK_TOUCH) != 0)
+                    continue;
+
                 ItemBuilder builder = NexoItems.itemFromId(data.nexoId());
                 if (builder == null) continue;
                 if (data.replaceOriginalDrop()) {
@@ -55,8 +60,11 @@ public class BlockBreakListener implements Listener {
         return 0;
     }
 
-    public static DropData.FortuneMode getFortuneValue() {
-        return DropData.fromConfig("globalSettings.fortuneMode").fortuneMode();
+    public static DropData.FortuneMode getFortuneValue(String dropName) {
+        if (DropData.fromConfig(dropName + ".fortuneMode").fortuneMode() == null) {
+            return DropData.FortuneMode.OFF;
+        }
+        return DropData.fromConfig(dropName + ".fortuneMode").fortuneMode();
     }
 
 }

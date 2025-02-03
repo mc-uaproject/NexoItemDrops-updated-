@@ -53,6 +53,13 @@ public record DropData(String nexoId, SourceType sourceType, String source, doub
         );
     }
 
+    public static boolean isDropPresent(String dropName) {
+        if (dropConfig == null) {
+            throw new IllegalStateException("Configuration has not been initialized");
+        }
+        return dropConfig.contains(dropName);
+    }
+
 
     public enum LootingMode {
         OFF,

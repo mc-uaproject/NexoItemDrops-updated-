@@ -1,4 +1,28 @@
 drops:
   globalSettings:
-    lootingMode: COMMON
-    fortuneMode: NORMAL
+    lootingMode: OFF
+    fortuneMode: OFF
+
+  exampleMobDrop:
+    item: "example_item"
+    type: "MOB"
+    source: "example_source"
+    chance: 0.5
+    quantityMin: 1
+    quantityMax: 3
+    dropWithSilkTouch: true
+    lootingMode: "COMMON"
+    fortuneMode: "OFF"
+    replaceOriginalDrop: false
+
+  exampleBlockDrop:
+    item: "example_item"
+    type: "BLOCK"
+    source: "example_source"
+    chance: 0.5
+    quantityMin: 1
+    quantityMax: 3
+    dropWithSilkTouch: true
+    lootingMode: "OFF"
+    fortuneMode: "NORMAL"
+    replaceOriginalDrop: false
