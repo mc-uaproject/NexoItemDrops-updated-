@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.vinerdream.nexoItemDrops.listeners.BlockBreakListener;
 import org.vinerdream.nexoItemDrops.listeners.DeathListener;
 import org.vinerdream.nexoItemDrops.mythic.DisplayCraft;
+import org.vinerdream.nexoItemDrops.mythic.DropHandler;
 import org.vinerdream.nexoItemDrops.mythic.RedSackCraft;
 
 import java.util.ArrayList;
@@ -20,19 +21,28 @@ public final class NexoItemDrops extends JavaPlugin {
     private MythicBukkit mythicBukkit;
     private final List<DropData> dropList = new ArrayList<>();
     private final Random random = new Random();
+    private DropHandler dropHandler;
+
+    public NexoItemDrops() {
+    }
 
     @Override
     public void onEnable() {
+
+        this.dropHandler = new DropHandler(this);
+
         saveDefaultConfig();
         loadConfig();
 
         this.mythicBukkit = MythicBukkit.inst();
 
-        Bukkit.getPluginManager().registerEvents(new DeathListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new DeathListener(this, dropHandler), this);
         Bukkit.getPluginManager().registerEvents(new BlockBreakListener(this), this);
 
         new DisplayCraft(this);
         new RedSackCraft(this);
+
+        getLogger().info("NexoItemDrops was successfully enabled!");
     }
 
     @Override
@@ -51,5 +61,6 @@ public final class NexoItemDrops extends JavaPlugin {
         for (String key : drops.getKeys(false)) {
             dropList.add(DropData.fromConfig(key));
         }
+        getLogger().info("Config has been loaded");
     }
 }

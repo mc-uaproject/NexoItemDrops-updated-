@@ -1,28 +1,30 @@
-drops:
-  globalSettings:
-    lootingMode: OFF
-    fortuneMode: OFF
+defaultsettings:
+  lootingMode: "OFF"
+  fortuneMode: "OFF"
 
-  exampleMobDrop:
-    item: "example_item"
-    type: "MOB"
-    source: "example_source"
-    chance: 0.5
+drops:
+  echo_enshrouder:
+    item: "minecraft:diamond"
+    type: "MYTHIC_MOB"
+    source: "echo_enshrouder"
+    chance: 1.0
     quantityMin: 1
-    quantityMax: 3
+    quantityMax: 1
     dropWithSilkTouch: true
     lootingMode: "COMMON"
     fortuneMode: "OFF"
     replaceOriginalDrop: false
 
-  exampleBlockDrop:
-    item: "example_item"
-    type: "BLOCK"
-    source: "example_source"
-    chance: 0.5
-    quantityMin: 1
-    quantityMax: 3
-    dropWithSilkTouch: true
-    lootingMode: "OFF"
-    fortuneMode: "NORMAL"
-    replaceOriginalDrop: false
+#  exampleBlockDrop:
+#    item: "example_item"
+#    type: "BLOCK"
+#    source: "example_source"
+#    chance: 0.5
+#    quantityMin: 1
+#    quantityMax: 3
+#    dropWithSilkTouch: true
+#    lootingMode: "OFF"
+#    fortuneMode: "NORMAL"
+#    replaceOriginalDrop: false
+
+

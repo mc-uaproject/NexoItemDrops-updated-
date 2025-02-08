@@ -1,7 +1,5 @@
 package org.vinerdream.nexoItemDrops.listeners;
 
-import com.nexomc.nexo.api.NexoItems;
-import com.nexomc.nexo.items.ItemBuilder;
 import org.bukkit.GameMode;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -12,13 +10,15 @@ import org.bukkit.inventory.ItemStack;
 import org.vinerdream.nexoItemDrops.DropData;
 import org.vinerdream.nexoItemDrops.NexoItemDrops;
 import org.vinerdream.nexoItemDrops.enums.SourceType;
-import org.vinerdream.nexoItemDrops.mythic.DropCalculator;
+import org.vinerdream.nexoItemDrops.mythic.DropHandler;
 
 public class BlockBreakListener implements Listener {
     private final NexoItemDrops plugin;
+    private final DropHandler dropHandler;
 
     public BlockBreakListener(NexoItemDrops plugin) {
         this.plugin = plugin;
+        this.dropHandler = new DropHandler(plugin);
     }
 
     @EventHandler
@@ -26,45 +26,29 @@ public class BlockBreakListener implements Listener {
         Player player = event.getPlayer();
         if (player.getGameMode() == GameMode.CREATIVE) return;
 
-        for (DropData data : plugin.getDropList()) {
-            if (data.sourceType() != SourceType.BLOCK) continue;
+        for (DropData dropData : plugin.getDropList()) {
+            if (dropData.sourceType() != SourceType.BLOCK) continue;
 
-            double baseChance = plugin.getRandom().nextDouble();
+            if (!event.getBlock().getType().getKey().toString().equalsIgnoreCase(dropData.source())) continue;
 
-            String dropName = data.nexoId();
-            if (data.nexoId() == null) return;
-
-            if (event.getBlock().getType().getKey().toString().equals(data.source()) && DropData.isDropPresent(dropName) &&
-                    (DropCalculator.calculateFortuneDropChance(baseChance, getFortuneLevel(player), getFortuneValue(dropName))) < data.chance()) {
-
-                if (!data.dropWithSilkTouch()
-                        && event.getPlayer().getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.SILK_TOUCH) != 0)
-                    continue;
-
-                ItemBuilder builder = NexoItems.itemFromId(data.nexoId());
-                if (builder == null) continue;
-                if (data.replaceOriginalDrop()) {
-                    event.setDropItems(false);
-                }
-                ItemStack item = builder.build();
-                item.setAmount(plugin.getRandom().nextInt(data.quantityMin(), data.quantityMax() + 1));
-                event.getBlock().getWorld().dropItem(event.getBlock().getLocation().add(0.5, 0.5, 0.5), item);
+            if (!dropData.dropWithSilkTouch()) {
+                ItemStack tool = player.getInventory().getItemInMainHand();
+                if (tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0) continue;
             }
+
+            double baseChance = dropData.chance();
+            int fortuneLevel = getFortuneLevel(player);
+
+            if (dropData.replaceOriginalDrop()) {
+                event.setDropItems(false);
+            }
+
+            dropHandler.processDrop(event.getBlock().getLocation().add(0.5, 0.5, 0.5), dropData, baseChance, fortuneLevel, false);
         }
     }
 
     public static int getFortuneLevel(Player player) {
-        if (player.getInventory().getItemInMainHand().containsEnchantment(Enchantment.FORTUNE)) {
-            return player.getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.FORTUNE);
-        }
-        return 0;
+        ItemStack tool = player.getInventory().getItemInMainHand();
+        return tool.containsEnchantment(Enchantment.FORTUNE) ? tool.getEnchantmentLevel(Enchantment.FORTUNE) : 0;
     }
-
-    public static DropData.FortuneMode getFortuneValue(String dropName) {
-        if (DropData.fromConfig(dropName + ".fortuneMode").fortuneMode() == null) {
-            return DropData.FortuneMode.OFF;
-        }
-        return DropData.fromConfig(dropName + ".fortuneMode").fortuneMode();
-    }
-
 }

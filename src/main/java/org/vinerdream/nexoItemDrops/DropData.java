@@ -3,8 +3,6 @@ package org.vinerdream.nexoItemDrops;
 import org.bukkit.configuration.ConfigurationSection;
 import org.vinerdream.nexoItemDrops.enums.SourceType;
 
-import java.util.Objects;
-
 
 public record DropData(String nexoId, SourceType sourceType, String source, double chance,
                        int quantityMin, int quantityMax, boolean dropWithSilkTouch, LootingMode lootingMode,
@@ -39,25 +37,46 @@ public record DropData(String nexoId, SourceType sourceType, String source, doub
     }
 
     public static DropData fromConfig(String key) {
-        return new DropData(
-                dropConfig.getString(key + ".item"),
-                SourceType.valueOf(dropConfig.getString(key + ".type", "mob").toUpperCase()),
-                dropConfig.getString(key + ".source"),
-                dropConfig.getDouble(key + ".chance"),
-                dropConfig.getInt(key + ".quantityMin", 1),
-                dropConfig.getInt(key + ".quantityMax", 1),
-                dropConfig.getBoolean(key + ".dropWithSilkTouch"),
-                LootingMode.valueOf(Objects.requireNonNull(dropConfig.getString(key + ".lootingMode")).toUpperCase()),
-                FortuneMode.valueOf(Objects.requireNonNull(dropConfig.getString(key + ".fortuneMode")).toUpperCase()),
-                dropConfig.getBoolean(key + ".replaceOriginalDrop")
-        );
-    }
+        String item = dropConfig.getString(key + ".item");
+        SourceType sourceType = SourceType.valueOf(dropConfig.getString(key + ".type").toUpperCase());
+        String source = dropConfig.getString(key + ".source");
+        double chance = dropConfig.getDouble(key + ".chance");
+        int quantityMin = dropConfig.getInt(key + ".quantityMin", 1);
+        int quantityMax = dropConfig.getInt(key + ".quantityMax", 1);
+        boolean dropWithSilkTouch = dropConfig.getBoolean(key + ".dropWithSilkTouch");
 
-    public static boolean isDropPresent(String dropName) {
-        if (dropConfig == null) {
-            throw new IllegalStateException("Configuration has not been initialized");
+        Object lootingModeObj = dropConfig.get(key + ".lootingMode");
+        String lootingModeStr = lootingModeObj != null ? lootingModeObj.toString() : "";
+        if (lootingModeStr.isEmpty() || lootingModeStr.equalsIgnoreCase("false")) {
+
+            Object defaultLootingModeObj = dropConfig.get("defaultsettings.lootingMode");
+            lootingModeStr = (defaultLootingModeObj != null ? defaultLootingModeObj.toString() : "OFF");
         }
-        return dropConfig.contains(dropName);
+        LootingMode lootingMode = LootingMode.valueOf(lootingModeStr.toUpperCase());
+
+        Object fortuneModeObj = dropConfig.get(key + ".fortuneMode");
+        String fortuneModeStr = fortuneModeObj != null ? fortuneModeObj.toString() : "";
+        if (fortuneModeStr.isEmpty() || fortuneModeStr.equalsIgnoreCase("false")) {
+            Object defaultFortuneModeObj = dropConfig.get("defaultsettings.fortuneMode");
+            fortuneModeStr = (defaultFortuneModeObj != null ? defaultFortuneModeObj.toString() : "OFF");
+        }
+        FortuneMode fortuneMode = FortuneMode.valueOf(fortuneModeStr.toUpperCase());
+
+        boolean replaceOriginalDrop = dropConfig.getBoolean(key + ".replaceOriginalDrop");
+
+
+        return new DropData(
+                item,
+                sourceType,
+                source,
+                chance,
+                quantityMin,
+                quantityMax,
+                dropWithSilkTouch,
+                lootingMode,
+                fortuneMode,
+                replaceOriginalDrop
+        );
     }
 
 
